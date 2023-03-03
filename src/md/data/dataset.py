@@ -62,6 +62,8 @@ class Dataset:
             for v in var:
                 if v != np.nan:
                     first_non_null = v
+                    break
+                
             if isinstance(first_non_null,str):
                 unique_vals, counts = np.unique(var[var == var], return_counts=True)
                 print(" -Quantidade de valores únicos: ",len(unique_vals))

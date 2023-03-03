@@ -1,0 +1,17 @@
+
+from setuptools import setup, find_packages
+
+setup(
+    name='md',
+    version='0.0.1',
+    python_requires='>=3.7',
+    package_dir={'': 'src'},
+    packages=find_packages('src'),
+    zip_safe=False,
+    install_requires=['numpy', 'pandas'],
+    author='',
+    author_email='',
+    description='Mineracao de Dados',
+    license='Apache License Version 2.0',
+    keywords='',
+)
