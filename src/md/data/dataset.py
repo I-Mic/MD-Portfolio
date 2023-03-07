@@ -19,6 +19,31 @@ class Dataset:
         self.features = features
         self.label = label
 
+
+
+    def __get_categories(self, data, columns):
+        categories = {}
+        for c in range(len(columns)):
+            column = data.T[c]
+            uniques = np.unique(column)
+            categories[c] = np.delete(uniques, uniques == '')
+        return categories
+        
+        
+    def __label_encode(self, data, categorical_columns):
+        categories = self.__get_categories(data, categorical_columns)
+        encoded_data = np.full(data.shape, np.nan)
+    
+        for k in categories:
+            cats = categories[k]
+            for c in range(len(cats)):
+                cat = cats[c]
+                dt = np.transpose((data.T[k] == cat)).nonzero()
+                encoded_data.T[k, dt] = c
+
+        return encoded_data, categories
+
+    
     def __get_feature_type(self, value):
         try:
             arr = np.array([float(value)])
@@ -39,8 +64,8 @@ class Dataset:
             categoricals = []
 
             for i in range(len(row)):
-                col = row[i]
-                dtype = self.__get_feature_type(col)
+                column = row[i]
+                dtype = self.__get_feature_type(column)
 
                 if dtype == 'numerical':
                     numericals.append(i)
@@ -48,27 +73,6 @@ class Dataset:
                     categoricals.append(i)
             
             return features, numericals, categoricals
-        
-    def __get_categories(self, data, cols):
-        categories = {}
-        for c in range(len(cols)):
-            col = data.T[c]
-            uniques = np.unique(col)
-            categories[c] = np.delete(uniques, uniques == '')
-        return categories
-        
-    def __label_encode(self, data, categorical_columns):
-        categories = self.__get_categories(data, categorical_columns)
-        encoded_data = np.full(data.shape, np.nan)
-    
-        for k in categories:
-            cats = categories[k]
-            for c in range(len(cats)):
-                cat = cats[c]
-                dt = np.transpose((data.T[k] == cat)).nonzero()
-                encoded_data.T[k, dt] = c
-
-        return encoded_data, categories
 
     def read_csv(self, filename,label=None, sep = ","):
         features, numericals, categoricals = self.__get_types(filename, sep)
@@ -107,10 +111,10 @@ class Dataset:
         self.categorical_cols = categoricals
         self.encode_categories = categories
         
-
-
     def read_tsv(self,filename,label=None):
-        self.read_csv(self,filename,label,sep='t')
+        self.read_csv(self,filename,label,sep='\t')
+
+
 
     def write_csv(self,file,delimiter=','):
         data = np.hstack((self.X, self.y.reshape(-1, 1)))
