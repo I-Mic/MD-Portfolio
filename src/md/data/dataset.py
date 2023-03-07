@@ -134,6 +134,11 @@ class Dataset:
 
     def get_label(self):
         return self.label
+    
+    def get_classes(self):
+        if self.y is None:
+            raise ValueError("Dataset does not have a label")
+        return np.unique(self.y)
 
     def describe(self):
         #Descreve as variaveis de entrada e saida
