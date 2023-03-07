@@ -99,7 +99,7 @@ class Dataset:
             self.y = data[1:,features.index(self.label)].T
             self.X = np.delete(data, features.index(self.label), axis=1)
             self.X = self.X[1:]
-            self.features = features
+            self.features = features.copy()
             self.features.remove(self.label)
 
         
@@ -168,16 +168,11 @@ class Dataset:
                 elif np.isnan(val):
                     null_count[i] += 1
 
-        for val in self.y:
-            if isinstance(val, str):
-                if val == None:
-                    null_count[-1] += 1
-            elif np.isnan(val):
-                null_count[-1] += 1
+
         
         for i in range(len(self.features)):
             print(self.features[i],  "- valores nulos:",  null_count[i])
-        print(self.label, "- valores nulos:", null_count[-1])
+
 
     def replace_to_null(self,value):
         #Substitui determinados valores para np.nan
