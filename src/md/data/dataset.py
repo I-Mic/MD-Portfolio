@@ -79,15 +79,16 @@ class Dataset:
             
         numerical_data = np.genfromtxt(filename, delimiter=sep, usecols=numericals)
         categorical_data = np.genfromtxt(filename, delimiter=sep, dtype='U', usecols=categoricals)
-        
         if len(categorical_data.shape) == 1:
             categorical_data = np.reshape(categorical_data, (categorical_data.shape[0], 1))
 
         encoded_data, categories = self.__label_encode(categorical_data, categoricals)
         data = np.concatenate((numerical_data.T, encoded_data.T)).T
         data = np.full((numerical_data.shape[0], numerical_data.shape[1] + encoded_data.shape[1]), np.nan)
-        data.T[numericals] = numerical_data.T
-        data.T[categoricals] = encoded_data.T
+        if len(numericals) > 0: 
+            data.T[numericals] = numerical_data.T
+        if len(categoricals) > 0:
+            data.T[categoricals] = encoded_data.T
 
         self.all_cols = features.copy()
         self.data = data[1:].copy()
