@@ -9,7 +9,7 @@ def f_regression(dataset: Dataset) -> Union[Tuple[np.ndarray, np.ndarray],Tuple[
 
     """
     Scoring function for regression problems.
-    It computes pearson correlation coefficients between each feature and the target variable (R^2 score).
+    It computes pearson correlation coefficients between each feature and the target variable.
 
     Then, it computes the F-value using the following F-statistics formula:
     F = (R^2 / (1 - R^2)) * (n - 2)
