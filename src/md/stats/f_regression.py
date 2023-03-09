@@ -23,8 +23,8 @@ def f_regression(dataset: Dataset) -> Union[Tuple[np.ndarray, np.ndarray],Tuple[
 
     corr_coef = []
     for i in range(X.shape[1]):
-        r2, _ = stats.pearsonr(X[:, i], y)
-        corr_coef.append(r2)
+        r, _ = stats.pearsonr(X[:, i], y)
+        corr_coef.append(r)
 
     corr_coef = np.array(corr_coef)
 
