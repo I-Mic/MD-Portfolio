@@ -9,7 +9,7 @@ class DecisionTreeClassifier:
 
     def _best_criteria(self,feature, y, criterion):
         if criterion == 'gini':
-            return self._gini_impurity(y)
+            return self._gini_index(y)
         elif criterion == 'entropy':
             return self._entropy(y)
         elif criterion == 'gain':
@@ -17,7 +17,7 @@ class DecisionTreeClassifier:
         else:
             raise Exception("Invalid Criteria!") 
 
-    def _gini_impurity(self, y):
+    def _gini_index(self, y):
         n_samples = len(y)
         _, counts = np.unique(y, return_counts=True)
         impurity = 1 - np.sum((counts / n_samples) ** 2)
