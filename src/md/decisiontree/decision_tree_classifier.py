@@ -154,7 +154,7 @@ class DecisionTreeClassifier:
 
         return predictions
     
-    def score(self, X, y):
-        return np.mean(self.predict(X) == y)
+    def score(self, x, y):
+        return np.mean(x == y)
 
 
