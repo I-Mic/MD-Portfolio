@@ -75,13 +75,15 @@ class Dataset:
             return features, numericals, categoricals
 
     def read_csv(self, filename,label=None, sep = ","):
+        #Gets type of each feature
         features, numericals, categoricals = self.__get_types(filename, sep)
-            
+        #Saves numerical data and categorical data from dataset
         numerical_data = np.genfromtxt(filename, delimiter=sep, usecols=numericals)
         categorical_data = np.genfromtxt(filename, delimiter=sep, dtype='U', usecols=categoricals)
+
         if len(categorical_data.shape) == 1:
             categorical_data = np.reshape(categorical_data, (categorical_data.shape[0], 1))
-
+        #Encodes all categorical data
         encoded_data, categories = self.__label_encode(categorical_data, categoricals)
         if len(categoricals) > 0:
             data = np.concatenate((numerical_data.T, encoded_data.T)).T
@@ -96,13 +98,13 @@ class Dataset:
 
         self.all_cols = features.copy()
         self.data = data[1:].copy()
-
+        #Uses last dataset feature as label by default
         if label == None:
             self.features = features[:-1]
             self.label = features[-1]
             self.X = data[1:,0:-1]
             self.y = data[1:,-1]
-
+        #In case another label is determined
         else:
             self.label = label
             self.y = data[1:,features.index(self.label)].T
@@ -150,14 +152,15 @@ class Dataset:
         return np.unique(self.y)
 
     def describe(self):
-        #Descreve as variaveis de entrada e saida
+        #Gives simple analytical data for each type of entrie
+        #For categorical data returns nr of unique values and most frequent value
         for i in range(len(self.categorical_cols)):
             print(self.all_cols[self.categorical_cols[i]])
             var = self.data[:, self.categorical_cols[i]]   
             unique_vals, counts = np.unique(var, return_counts=True)
             print(" -Quantidade de valores únicos: ",len(unique_vals))
             print(" -Valor mais frequente: ",np.argmax(counts))
-            
+        #For numerical data returns mean median standard deviation min and max
         for i in range(len(self.numerical_cols)):
             print(self.all_cols[self.numerical_cols[i]])
             var = self.data[:, self.numerical_cols[i]] 
@@ -171,9 +174,9 @@ class Dataset:
    
 
     def count_nulls(self):
-        #Conta os valores nulos nas variaveis de entrada e saida
+        #Counts nulls values from the dataset
         null_count = np.zeros(self.X.shape[1], dtype=int)
-        
+        #Nulls count for each feature
         for i in range(self.X.shape[1]):
             for val in self.X[:, i]:
                 if isinstance(val, str):
@@ -183,24 +186,28 @@ class Dataset:
                     null_count[i] += 1
 
 
-        
+        #Nulls count for label
         for i in range(len(self.features)):
             print(self.features[i],  "- valores nulos:",  null_count[i])
 
 
     def replace_to_null(self,value):
-        #Substitui determinados valores para np.nan
+        #Replaces a given value to a np.nan
         self.X = np.where(self.X==value,np.nan,self.X)
         self.y = np.where(self.y==value,np.nan,self.y)
 
     def replace_nulls(self, method, index=-1):
+        #Replaces nulls with a given method
+        #By default replaces nulls for all features
         if index < 0:
+            #Replaces nulls with the mode of the feature
             if method == "mode":
                 for i in range(self.X.shape[1]):
                     var = self.X[:,i]                  
                     _, counts = np.unique(var, return_counts=True)
                     mode = np.argmax(counts)
                     self.X[:,i] = np.where(np.isnan(var),mode,var)
+            #Replaces nulls with the mean of the feature
             elif method == "mean":
                 for i in range(self.X.shape[1]):
                     var = self.X[:,i]
@@ -209,12 +216,15 @@ class Dataset:
 
             else: print("Method not recognized")
 
+        #Can also replace null for a single determined feature
         elif self.X.shape[1] > index:                
             var = self.X[:,index]
+            #Replaces nulls with mode
             if method == "mode":                  
                 _, counts = np.unique(var, return_counts=True)
                 mode = np.argmax(counts)
                 self.X[:,index] = np.where(np.isnan(var),mode,var)
+            #Replaces nulls with mean
             elif method == "mean":
                 mean = np.nanmean(var)
                 self.X[:,index] = np.where(np.isnan(var),mean,var)

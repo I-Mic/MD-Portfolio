@@ -16,18 +16,22 @@ class PRISM():
         while len(np.unique(y)) > 1:
             best_rule, best_score = None, -np.inf
 
+            #Iterates each feature of the dataset
             for feature_idx, _ in enumerate(X.shape):
                 unique_values = np.unique(X[:, feature_idx])
                 covered = np.equal.outer(X[:, feature_idx], unique_values)
-
+                #Creates a rule for each value of the feature
                 for i, value in enumerate(unique_values):
                     rule = (feature_idx, value)
+                    #Gets score of created rule
                     score = self.probability(y,covered[:, i])
+                    #Checks if score improves with new rule
                     if score > best_score:
                         best_rule, best_score = rule, score
-
+            #Saves the rule
             self.rules.append(best_rule)
-            X, y = self.remove_covered_examples(X, y, best_rule)
+            #Removes all samples covered by added rule
+            X, y = self.remove_covered_by_rule(X, y, best_rule)
 
     def probability(self, y, covered):
 
@@ -35,7 +39,7 @@ class PRISM():
         _ ,counts = np.unique(targets,return_counts=True)
         return np.argmax(counts) / len(targets)
 
-    def remove_covered_examples(self, X, y, rule):
+    def remove_covered_by_rule(self, X, y, rule):
 
         feature_idx, value = rule
         not_covered = X[:, feature_idx] != value
