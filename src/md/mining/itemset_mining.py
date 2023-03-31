@@ -1,4 +1,5 @@
 from src.md.data.transaction_data import TransactionDataset
+from itertools import combinations
 
 def frequent_itemsets(dataset:TransactionDataset, min_support):
     """
@@ -90,16 +91,22 @@ def generate_rules(frequent_itemsets, min_confidence):
     min_confidence (float): The minimum confidence value for a rule to be considered strong.
 
     Returns:
-    rules (dic): A dictionary containing all the antecedent and consequent items with their respective confidence.
+    rules (dic): A dictionary containing all rules with their respective confidence.
     """
    
-    rules = []
-    for itemset in frequent_itemsets.keys():
+    association_rules = []
+    for itemset in frequent_itemsets:
         if len(itemset) > 1:
-            for item in itemset:
-                antecedent = frozenset([item])
-                consequent = itemset - antecedent
-                confidence = frequent_itemsets[consequent] / frequent_itemsets[antecedent]
-                if confidence >= min_confidence:
-                    rules.append((antecedent, consequent, confidence))
-    return rules
+            for i in range(len(itemset)-1):
+                for item in combinations(itemset,i+1):
+                    #all possible combinations of items get to go to the left of the rule
+                    left = frozenset(item)
+                    #rest of items go to the right side of the rule
+                    right = itemset - left
+                    # confidence = support/item_count
+                    confidence = frequent_itemsets[itemset] / frequent_itemsets[left]
+                    if confidence >= min_confidence:
+                        association_rules.append((left, right, confidence))
+                
+
+    return association_rules
