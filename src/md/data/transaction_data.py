@@ -55,13 +55,16 @@ class TransactionDataset:
         return len(itemset)
     
     def get_frequent_itemsets(self):
-        item_counts = {}
+        """
+        Returns A dictionary containing all the frequent itemsets in the dataset and their respective counts.
+        """
+        count = {}
         for transaction in self.transactions:
             for item in transaction:
-                if item in item_counts:
-                    item_counts[item] += 1
+                if item in count:
+                    count[item] += 1
                 else:
-                    item_counts[item] = 1
-        freq_items = sorted(item_counts.items(), key=lambda x: x[1], reverse=True)
-        return freq_items
+                    count[item] = 1
+        frequent_items = sorted(count.items(), key=lambda x: x[1], reverse=True)
+        return frequent_items
 

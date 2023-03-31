@@ -1,6 +1,6 @@
 from src.md.data.transaction_data import TransactionDataset
 
-def generate_frequent_itemsets(dataset:TransactionDataset, min_support):
+def frequent_itemsets(dataset:TransactionDataset, min_support):
     """
     This function takes a TransactionDataset object and a minimum support value as input and generates all the frequent 
     itemsets in the dataset that satisfy the minimum support constraint as according to the Apriori Algorithm.
@@ -15,28 +15,28 @@ def generate_frequent_itemsets(dataset:TransactionDataset, min_support):
 
     def generate_candidates(freq_itemsets, k):
         """
-        This function takes a dictionary of frequent itemsets and an integer k as input and generates all the candidate 
-        k-itemsets.
+        This function takes a dictionary of frequent k-1 size itemsets and an integer size k as input and generates all the candidate 
+        k-size-itemsets.
 
         Parameters:
-        freq_itemsets (dict): A dictionary containing all the frequent itemsets in the dataset and their respective counts.
+        freq_itemsets (dict): A dictionary containing the frequent k-1 size itemsets in the dataset.
         k (int): The size of the itemsets to generate.
 
         Returns:
-        candidates (set): A set of all the candidate k-itemsets.
+        candidates (set): A set of all the candidate k-size-itemsets.
         """
         candidates = set()
-        for itemset1 in freq_itemsets:
-            for itemset2 in freq_itemsets:
-                if len(itemset1.union(itemset2)) == k:
-                    candidates.add(itemset1.union(itemset2))
+        for first_set in freq_itemsets:
+            for second_set in freq_itemsets:
+                if len(first_set.union(second_set)) == k:
+                    candidates.add(first_set.union(second_set))
         return candidates
     
 
     def get_frequent_itemsets(transactions, itemsets, min_support):
         """
         This function takes a list of transactions, a set of itemsets and a minimum support value as input and generates all 
-        the frequent itemsets in the transactions that satisfy the minimum support constraint.
+        the frequent itemsets and their counts in the transactions that satisfy the minimum support constraint.
 
         Parameters:
         transactions (list): A list of all the transactions in the dataset.
@@ -44,7 +44,7 @@ def generate_frequent_itemsets(dataset:TransactionDataset, min_support):
         min_support (float): The minimum support value for an itemset to be considered frequent.
 
         Returns:
-        freq_itemsets (dict): A dictionary containing all the frequent itemsets in the dataset and their respective counts.
+        freq_itemsets (dict): A dictionary containing the frequent itemsets in the dataset and their respective counts.
         """
         counts = {}
         for transaction in transactions:
@@ -55,26 +55,25 @@ def generate_frequent_itemsets(dataset:TransactionDataset, min_support):
                     else:
                         counts[itemset] = 1
 
-        freq_itemsets = {itemset: count for itemset, count in counts.items() if
-                        count >= min_support}
+        freq_itemsets = {itemset: count for itemset, count in counts.items() if count >= min_support}
         return freq_itemsets
 
     freq_itemsets = {}
-    # Generate one-itemsets
-    one_itemsets = {frozenset([item]): count for item, count in dataset.get_frequent_itemsets()}
-    freq_itemsets.update(one_itemsets)
+    # Generate one-size-itemsets
+    one_size_itemsets = {frozenset([item]): count for item, count in dataset.get_frequent_itemsets()}
+    freq_itemsets.update(one_size_itemsets)
 
     k = 2
-    # Generate k-itemsets
+    # Generate k-size-itemsets
     while True:
-        k_itemsets = generate_candidates(freq_itemsets, k)
-        if not k_itemsets:
+        k_size_itemsets = generate_candidates(freq_itemsets, k)
+        if not k_size_itemsets:
             break
-        # Get frequent k-itemsets
-        k_freq_itemsets = get_frequent_itemsets(dataset.get_transactions(), k_itemsets, min_support)
-        if not k_freq_itemsets:
+        # Get frequent k-size-itemsets
+        k_size_freq_itemsets = get_frequent_itemsets(dataset.get_transactions(), k_size_itemsets, min_support)
+        if not k_size_freq_itemsets:
             break
-        freq_itemsets.update(k_freq_itemsets)
+        freq_itemsets.update(k_size_freq_itemsets)
         k += 1
 
     return freq_itemsets
