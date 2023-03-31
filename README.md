@@ -11,4 +11,6 @@ Realizado por:
    - DecisionTreeClassifier
    - NaiveBayes
    - Prism
-   - Algoritmo Apriori
+   - Classe TransactionDataset que permite guardar e aceder transaction datasets
+   - Algoritmo Apriori e regras de Associacao
+   
