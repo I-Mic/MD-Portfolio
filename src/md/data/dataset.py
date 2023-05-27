@@ -140,6 +140,9 @@ class Dataset:
     def get_y(self):
         return self.y
     
+    def get_Xy(self):
+        return self.X,self.y
+    
     def get_features(self):
         return self.features
 
