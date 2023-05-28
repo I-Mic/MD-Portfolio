@@ -1,13 +1,80 @@
 import numpy as np
 
 class DecisionTreeClassifier:
+    """
+    Decision tree classifier.
+
+    Parameters:
+        max_depth (int or None, optional): The maximum depth of the tree. Defaults to None.
+        pruning (bool, optional): Whether to perform pruning using reduced error pruning. Defaults to False.
+        criterion (str, optional): The criterion to use for determining the best split at each node. Possible values are 'gini', 'entropy', and 'gain'. Defaults to 'gini'.
+
+    Methods:
+        fit(X, y):
+            Builds the decision tree classifier.
+
+            Parameters:
+                X (array-like of shape (n_samples, n_features)): The input samples.
+                y (array-like of shape (n_samples,)): The target values.
+
+        predict(X):
+            Predicts the target values for the input samples.
+
+            Parameters:
+                X (array-like of shape (n_samples, n_features)): The input samples.
+
+            Returns:
+                array-like of shape (n_samples,): The predicted target values.
+
+        score(X, y):
+            Returns the mean accuracy on the given test data and labels.
+
+            Parameters:
+                X (array-like of shape (n_samples, n_features)): The input samples.
+                y (array-like of shape (n_samples,)): The true labels.
+
+            Returns:
+                float: The mean accuracy.
+
+    Attributes:
+        max_depth (int or None): The maximum depth of the tree.
+        tree (tuple or int or None): The decision tree structure represented as a tuple or an integer if the node is a leaf.
+        pruning (bool): Whether pruning is performed.
+        criterion (str): The criterion used for determining the best split.
+
+    """
+
     def __init__(self, max_depth=None, pruning = False,criterion = 'gini'):
+        """
+        Initializes the DecisionTreeClassifier.
+
+        Parameters:
+            max_depth (int or None, optional): The maximum depth of the tree.
+            pruning (bool, optional): Whether to perform pruning using reduced error pruning.
+            criterion (str, optional): The criterion to use for determining the best split at each node. 
+        """
+
         self.max_depth = max_depth
         self.tree = None
         self.pruning = pruning
         self.criterion = criterion
 
     def _best_criteria(self,feature, y, criterion):
+        """
+        Computes the best criteria value for determining the best split at each node.
+
+        Parameters:
+            feature (array-like of shape (n_samples,)): The feature values.
+            y (array-like of shape (n_samples,)): The target values.
+            criterion (str): The criterion to use for determining the best split.
+
+        Returns:
+            float: The best criteria value.
+
+        Raises:
+            Exception: If an invalid criterion is provided.
+        """
+
         if criterion == 'gini':
             return self._gini_index(y)
         elif criterion == 'entropy':
@@ -18,18 +85,49 @@ class DecisionTreeClassifier:
             raise Exception("Invalid Criteria!") 
 
     def _gini_index(self, y):
+        """
+        Computes the Gini index impurity measure.
+
+        Parameters:
+            y (array-like of shape (n_samples,)): The target values.
+
+        Returns:
+            float: The Gini index impurity measure.
+        """
+
         n_samples = len(y)
         _, counts = np.unique(y, return_counts=True)
         impurity = 1 - np.sum((counts / n_samples) ** 2)
         return impurity
 
     def _entropy(self,y):
+        """
+        Computes the entropy impurity measure.
+
+        Parameters:
+            y (array-like of shape (n_samples,)): The target values.
+
+        Returns:
+            float: The entropy impurity measure.
+        """
+
         _, counts = np.unique(y, return_counts=True)
         probabilities = counts / len(y)
         entropy = -np.sum(probabilities * np.log2(probabilities))
         return entropy
     
     def _gain_ratio(self, feature, y):
+        """
+        Computes the gain ratio for a feature.
+
+        Parameters:
+            feature (array-like of shape (n_samples,)): The feature values.
+            y (array-like of shape (n_samples,)): The target values.
+
+        Returns:
+            float: The gain ratio.
+        """
+
         n = len(y)
         values, counts = np.unique(feature, return_counts=True)
         entropy_before = self._entropy(y)
@@ -42,6 +140,18 @@ class DecisionTreeClassifier:
 
 
     def _best_split(self, X, y):
+        """
+        Finds the best split point for the given data.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)): The input samples.
+            y (array-like of shape (n_samples,)): The target values.
+
+        Returns:
+            tuple: A tuple containing the index of the best feature, the best threshold value, and the best gain.
+
+        """
+
         best_feature = None
         best_threshold = None
         best_gain = -np.inf
@@ -76,6 +186,19 @@ class DecisionTreeClassifier:
         return best_feature, best_threshold, best_gain
 
     def _build_tree(self, X, y, depth):
+        """
+        Recursively builds the decision tree.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)): The input samples.
+            y (array-like of shape (n_samples,)): The target values.
+            depth (int): The current depth of the tree.
+
+        Returns:
+            tuple or int or None: The decision tree structure represented as a tuple or an integer if the node is a leaf.
+
+        """
+
         if depth == self.max_depth:
             return 
 
@@ -104,6 +227,19 @@ class DecisionTreeClassifier:
         return node
 
     def _post_pruning(self, X, y, node):
+        """
+        Performs post-pruning on the decision tree.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)): The input samples.
+            y (array-like of shape (n_samples,)): The target values.
+            node (tuple or int): The current node to prune.
+
+        Returns:
+            tuple or int or None: The pruned decision tree structure represented as a tuple or an integer if the node is a leaf.
+
+        """
+
         #Reduced Error pruning
         if isinstance(node, tuple):
             feature, threshold, left_subtree, right_subtree = node
@@ -136,9 +272,27 @@ class DecisionTreeClassifier:
         return node
 
     def fit(self, X, y):
+        """
+        Builds the decision tree classifier.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)): The input samples.
+            y (array-like of shape (n_samples,)): The target values.
+        """
+
         self.tree = self._build_tree(X, y, 0)
 
     def predict(self, X):
+        """
+        Predicts the target values for the input samples.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)): The input samples.
+
+        Returns:
+            array-like of shape (n_samples,): The predicted target values.
+        """
+
         predictions = np.zeros(len(X))
 
         for i in range(len(X)):
@@ -155,5 +309,16 @@ class DecisionTreeClassifier:
         return predictions
     
     def score(self, x, y):
+        """
+        Returns the mean accuracy on the given test data and labels.
+
+        Parameters:
+            X (array-like of shape (n_samples, n_features)): The input samples.
+            y (array-like of shape (n_samples,)): The true labels.
+
+        Returns:
+            float: The mean accuracy.
+        """
+        
         return np.mean(x == y)
 
