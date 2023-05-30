@@ -34,7 +34,7 @@ class VarianceThreshold:
         self.threshold = threshold
         self.variance = None
 
-    def fit(self, dataset: Dataset) -> 'VarianceThreshold':
+    def fit(self, dataset: Dataset):
         """
         Compute the variance of each feature in the input data and store them in the variance attribute.
 
@@ -49,10 +49,11 @@ class VarianceThreshold:
             The fitted object.
         """
 
+        # Compute the variance of each feature in the input data
         self.variance = np.nanvar(dataset.X, axis=0)
         return self
 
-    def transform(self, dataset: Dataset) -> Dataset:
+    def transform(self, dataset: Dataset):
         """
         Reduce the input data to the features with variances greater than the threshold.
 
@@ -67,11 +68,14 @@ class VarianceThreshold:
             A new dataset object containing the selected features.
         """
 
+        # Create a boolean mask indicating the features with variances greater than the threshold
         features_mask = self.variance > self.threshold
+
+        # Filter the features and create a new dataset object containing only the selected features
         features = np.array(dataset.features)[features_mask]
         return Dataset(dataset.X[:, features_mask], dataset.y, list(features), dataset.label)
 
-    def fit_transform(self, dataset: Dataset) -> Dataset:
+    def fit_transform(self, dataset: Dataset):
         """
         Compute the variance of each feature in the input data and reduce it to the features with variances greater than the threshold.
 

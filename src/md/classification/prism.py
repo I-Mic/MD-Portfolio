@@ -28,10 +28,13 @@ class PRISM():
             y (array-like of shape (n_samples,)): The target labels.
         """
 
+        # Check if all samples have the same label
         if len(np.unique(y)) == 1:
+            # If all samples have the same label, add a rule with None feature and the label
             self.rules.append((None, y[0]))
             return
         
+        # Continue adding rules until there are multiple unique labels in the target
         while len(np.unique(y)) > 1:
             best_rule, best_score = None, -np.inf
 
@@ -63,9 +66,11 @@ class PRISM():
         Returns:
             float: The probability of the most frequent class label within the covered samples.
         """
-
+        # Extract the target labels for the covered samples
         targets = y[covered]
+        # Compute the counts of each unique label in the covered samples
         _ ,counts = np.unique(targets,return_counts=True)
+        # Calculate the probability as the ratio of the most frequent label count to the total number of covered samples
         return np.argmax(counts) / len(targets)
 
     def remove_covered_by_rule(self, X, y, rule):
@@ -96,15 +101,22 @@ class PRISM():
         Returns:
             array-like of shape (n_samples,): The predicted target labels.
         """
-        
+
+        # Create an array to store the predicted labels
         predictions = np.zeros(X.shape[0])
+
+        # Iterate over each rule learned by PRISM
         for rule in self.rules:
             feature_idx, value = rule
+            # Determine the samples covered by the rule
             covered = X[:, feature_idx] == value
 
+            # Extract the target labels for the covered samples
             target_covered = self.dataset.y[self.dataset.X[:, feature_idx] == value]
+            # Find the most common label within the covered samples
             uniques, counts = np.unique(target_covered,return_counts=True)
             most_common = uniques[np.argmax(counts)]
+            # Assign the most common label to the predictions for the covered samples
             predictions[covered] = most_common
 
         return predictions

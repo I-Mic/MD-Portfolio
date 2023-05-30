@@ -42,8 +42,12 @@ class SelectKBest:
         Returns:
             Dataset: The transformed dataset containing only the k best features.
         """
+
+        # Get the indices of the k best features based on the computed scores (self.F)
         i = np.argsort(self.F)[-self.k:]
+        # Select the corresponding feature names from the original dataset
         features = np.array(dataset.features)[i]
+        # Returns a new Dataset object with the transformed dataset
         return Dataset(dataset.X[:, i], dataset.y, list(features), dataset.label)
 
     def fit_transform(self, dataset: Dataset) -> Dataset:
