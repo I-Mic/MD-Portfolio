@@ -167,18 +167,23 @@ class Dataset:
         #Encodes all categorical data
         encoded_data, categories = self.__label_encode(categorical_data, categoricals)
         if len(categoricals) > 0:
+            # Concatenate numerical and encoded categorical data
             data = np.concatenate((numerical_data.T, encoded_data.T)).T
+            # Fill the dataset array with NaN values
             data = np.full((numerical_data.shape[0], numerical_data.shape[1] + encoded_data.shape[1]), np.nan)
+            # Assign numerical data and encoded categorical data to their respective columns
             data.T[numericals] = numerical_data.T
             data.T[categoricals] = encoded_data.T
 
         else:
+            # Only numerical data, no categorical data
             data = np.concatenate((numerical_data.T)).T
             data = np.full((numerical_data.shape[0], numerical_data.shape[1]), np.nan)
             data.T[numericals] = numerical_data.T 
 
         self.all_cols = features.copy()
         self.data = data[1:].copy()
+        
         #Uses last dataset feature as label by default
         if label == None:
             self.features = features[:-1]

@@ -1,23 +1,16 @@
-from typing import Tuple, Union
-import numpy as np
 from scipy import stats
 from src.md.data.dataset import Dataset
 
-def f_classif(dataset: Dataset) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[float, float]]:
+def f_classif(dataset: Dataset):
     """
-    Performs one-way ANOVA test on a given dataset.
+    Performs the one-way ANOVA (Analysis of Variance) F-test on a dataset.
 
     Parameters:
-    -----------
-    dataset: Dataset
-        A dataset object containing the data and labels.
-    
+        dataset (Dataset): The dataset containing the features and labels.
+
     Returns:
-    --------
-    Union[Tuple[np.ndarray, np.ndarray], Tuple[float, float]]
-        A tuple containing the F statistic and p-value.
-        - If the dataset contains multiple classes, the F statistic and p-value for each feature is returned as arrays.
-        - If the dataset contains only one class, the F statistic and p-value for that class is returned as floats.
+        tuple: The F statistic and p-value resulting from the F-test.
+
     """
     
     # Get unique class labels

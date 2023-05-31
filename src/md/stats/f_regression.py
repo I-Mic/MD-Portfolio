@@ -1,11 +1,10 @@
 from src.md.data.dataset import Dataset
 
 import numpy as np
-from typing import Tuple, Union
 from scipy import stats
 
 
-def f_regression(dataset: Dataset) -> Union[Tuple[np.ndarray, np.ndarray],Tuple[float, float]]:
+def f_regression(dataset: Dataset):
 
     """
     Scoring function for regression problems.
