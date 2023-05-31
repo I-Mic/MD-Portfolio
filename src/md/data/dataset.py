@@ -428,4 +428,9 @@ class Dataset:
 
         else: print("Index out of bounds")
 
-        
+
+    def readDataset(self, filename, sep = ","):
+        #for .data type files
+        data = np.genfromtxt(filename, delimiter=sep)
+        self.X = data[:,0:-1]
+        self.y = data[:,-1]
