@@ -93,15 +93,18 @@ class MLP:
 
     def build_model(self, X, y, random = False):
         """
-        Build the MLP model by optimizing the weight matrices.
+        Build the Multi-Layer Perceptron (MLP) model.
 
-        Args:
-            X (numpy.ndarray): Input features matrix.
-            y (numpy.ndarray): Target values matrix.
+        Parameters:
+        - X: Input data of shape (n_samples, n_features).
+        - y: Target values of shape (n_samples,).
+        - random: Flag indicating whether to initialize weights randomly or with zeros (default=False).
 
         Returns:
-            None
+        None. The function updates the model's weight attributes (self.W1, self.W2) in-place.
+
         """
+        
         self.X, self.y = X, y
 
         # bias term
