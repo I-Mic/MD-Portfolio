@@ -91,7 +91,7 @@ class MLP:
         return res
 
 
-    def build_model(self, X, y):
+    def build_model(self, X, y, random = False):
         """
         Build the MLP model by optimizing the weight matrices.
 
@@ -107,9 +107,16 @@ class MLP:
         # bias term
         self.X = np.hstack((np.ones([self.X.shape[0], 1]), self.X))
 
-        # initialize the weights with zeros.
-        self.W1 = np.zeros([self.h, self.X.shape[1]])
-        self.W2 = np.zeros([1, self.h + 1])
+        if not random:
+            # initialize the weights with zeros.
+            self.W1 = np.zeros([self.h, self.X.shape[1]])
+            self.W2 = np.zeros([1, self.h + 1])
+
+        else:
+            # initialize the weights with random values.
+            np.random.seed(42)
+            self.W1 = np.random.randint(low=-100, high= 100,size=(self.h, self.X.shape[1]))
+            self.W2 = np.random.randint(low=-100, high= 100,size=(1, self.h + 1))
 
         # get number of elements in W1 and W2.
         size = self.h * self.X.shape[1] + self.h + 1
